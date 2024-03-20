@@ -1,0 +1,73 @@
+version: "3.3"
+services:
+  web:
+    image: django_sae_swarm
+    stdin_open: true
+    tty: true
+    command: bash -c "apachectl -DFOREGROUND"
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - internal_network
+    deploy:
+      replicas: 1
+
+  database:
+    image: mariadb
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: toto
+    volumes:
+      - db_data:/var/lib/mysql
+      - type: bind
+        source: ./init.sql
+        target: /docker-entrypoint-initdb.d/init.sql
+      - type: bind
+        source: ./custom-entrypoint.sh
+        target: /docker-entrypoint.sh
+    ports:
+      - "3306:3306"
+    networks:
+      - internal_network
+    deploy:
+      replicas: 1
+
+  nats_server:
+    image: nats
+    restart: always
+    networks:
+      - internal_network
+    ports:
+      - "4222:4222"
+    deploy:
+      replicas: 1
+
+  nats_get:
+    image: get_swarm
+    restart: always
+    networks:
+      - internal_network
+    deploy:
+      replicas: 1
+
+  nats_insert:
+    image: insert_swarm
+    restart: always
+    networks:
+      - internal_network
+    deploy:
+      replicas: 3
+
+networks:
+  internal_network:
+    driver: overlay
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.16.2.0/24
+
+volumes:
+  db_data:
+    driver: local

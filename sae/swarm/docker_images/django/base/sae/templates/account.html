@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SAE | Account {{account.name}}</title>
+</head>
+<style>
+    /* Reset des styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    color: #343a40;
+    padding: 20px;
+}
+
+a {
+    color: #007bff;
+    text-decoration: none;
+    margin-bottom: 20px;
+    display: inline-block;
+    transition: color 0.3s;
+}
+
+a:hover {
+    color: #0056b3;
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+h2 {
+    margin-bottom: 10px;
+}
+
+form {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+input[type="number"],
+input[type="submit"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+}
+
+input[type="submit"] {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+input[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+</style>
+<body>
+ <a href="/"> Home </a>
+ <h1> Viewing details of account : {{account.name}} </h1>
+ <p> id : {{account.id}} </p>
+ <p> name : {{account.name}} </p>
+ <p> balance : {{account.balance}}€ </p>
+
+ <form action="/account/{{account.id}}" method="post">
+   <h2> Insert money into account </h2>
+   {% csrf_token %}
+   <input value="" type="number" step="0.01" name="amount" id="amount" placeholder="amount" required>
+   <input type="submit" value="Confirm">
+ </form>
+</body>
+</html>

@@ -1,0 +1,82 @@
+version: "3.3"
+services:
+    web:
+      image: django_sae
+      container_name: django_sae
+      stdin_open: true
+      tty: true
+      command: bash -c "apachectl -DFOREGROUND"
+      restart: always
+      networks:
+        internal_network:
+          ipv4_address: 172.16.1.10
+      ports:
+        - "80:80"
+        - "443:443"
+
+    database:
+      image: mariadb
+      container_name: sae_database
+      restart: always
+      networks:
+        internal_network:
+          ipv4_address: 172.16.1.20
+      environment:
+        MYSQL_ROOT_PASSWORD: toto
+      volumes:
+        - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+        - ./custom-entrypoint.sh:/docker-entrypoint.sh
+        - ./db_data:/var/lib/mysql
+      ports:
+        - "3306:3306"
+
+    nats_server:
+      image: nats
+      restart: always
+      container_name: sae_nats_server
+      networks:
+        internal_network:
+          ipv4_address: 172.16.1.30
+      ports:
+        - "4222:4222"
+
+    nats_get:
+       image: get
+       restart: always
+       container_name: nats_get
+       networks:
+         internal_network:
+           ipv4_address: 172.16.1.31
+
+    nats_insert_A:
+       image: insert
+       restart: always
+       container_name: nats_insert_A
+       networks:
+         internal_network:
+           ipv4_address: 172.16.1.32
+
+    nats_insert_B:
+       image: insert
+       restart: always
+       container_name: nats_insert_B
+       networks:
+         internal_network:
+           ipv4_address: 172.16.1.33
+
+    nats_insert_C:
+       image: insert
+       restart: always
+       container_name: nats_insert_C
+       networks:
+         internal_network:
+           ipv4_address: 172.16.1.34
+
+networks:
+  internal_network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.16.1.0/24
+
